@@ -1,38 +1,38 @@
 #include<bits/stdc++.h>
 using namespace std;
+vector<int>sub_node;
+int root_dis=0;
+int n;
+vector<int>ans;
 
-    long long sum=0;
-    vector<long long>cnt;
-    vector<long long>ans;
-    int n;
-    long long solve(int node, int par, long long depth, vector<vector<int>>&adj){
-    sum+=depth;
+    int find_subnodes(int node, int parent , int dep,vector<vector<int>>&adj){
+        
 
-    long long total=1;
+        int subnodes=1;
 
-    for(auto child:adj[node]){
-        if(child==par)continue;
+        root_dis+=dep;
 
-        total+=solve(child,node,depth+1,adj);
+        for(auto itr:adj[node]){
+            if(itr==parent)continue;
+
+            subnodes+=find_subnodes(itr,node,dep+1,adj);
+        }
+        sub_node[node]=subnodes;
+        return subnodes;
     }
-    cnt[node]=total;
-    return total; 
 
+    void solve(int node, int parent ,vector<vector<int>>&adj ){
 
-    }
+        for(auto itr:adj[node]){
+            if(itr==parent)continue;
 
-    void found(int node, int parent,  vector<vector<int>>&adj){
-
-        for(auto child:adj[node]){
-            if(child==parent)continue;
-
-            ans[child]=ans[node]-cnt[child]+n-cnt[child];
-            found(child,node,adj);
-
-
+            int x=ans[node];
+            int childs=sub_node[itr];
+            x=x-childs+(n-childs);
+            ans[itr]=x;
+            solve(itr,node,adj);
         }
     }
-
 int main(){
     
     cin>>n;
@@ -47,18 +47,19 @@ int main(){
         int x,y;
         cin>>x>>y;
        
-        adj[x-1].push_back(y-1);
-        adj[y-1].push_back(x-1);
+        adj[x].push_back(y);
+        adj[y].push_back(x);
     }
 
     
      
-        cnt.resize(n,0);
-        solve(0,-1,0,adj);
-        ans.resize(n,0);
-        ans[0]=sum;
-        found(0,-1,adj);
-        for(int i=0;i<n;i++){
+        sub_node.resize(n+1,0);
+        
+        ans.resize(n+1,0);
+        find_subnodes(1,-1,0,adj);
+        ans[1]=root_dis;
+        solve(1,-1,adj);
+        for(int i=1;i<=n;i++){
             cout<<ans[i]<<" ";
         }
         return 0;

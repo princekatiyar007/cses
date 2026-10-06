@@ -50,6 +50,7 @@ int main() {
                     flag[v]=1;
                     dis[v]=(dis[v]+dis[node])%mod;
                     // cout<<node<<" "<<v<<endl;
+                    
                 }
                 
                
